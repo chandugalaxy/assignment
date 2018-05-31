@@ -1,0 +1,270 @@
+swagger: "2.0"
+
+info:
+  version: 0.0.1
+  title: Banking API
+  description: API for the basic operations of Banking
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+host: localhost
+basePath: /suncorp
+schemes:
+  - https
+
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: apiKey
+
+paths:
+  /banking/accounts:
+    post:
+      operationId: createAccount
+      summary: creates a new account
+      description: new account will be created for the given customer and returns the created account
+      parameters:
+        - name: createAccountRequest
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/CreateAccountRequest"
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/CreateAccountResponse"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+
+  /banking/deposit:
+    put:
+      operationId: depositFunds
+      summary: deposit of funds
+      description: funds will be deposited in to the provided account
+      parameters:
+        - in: body
+          name: depositRequest
+          required: true
+          schema:
+            $ref: "#/definitions/DepositRequest"
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/DepositResponse"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+  /banking/withdrawl:
+    put:
+      operationId: withdrawFunds
+      summary: withdrawl of funds
+      description: funds will be withdrawn from the provided account
+      parameters:
+        - in: body
+          name: withdrawlRequest
+          required: true
+          schema:
+            $ref: "#/definitions/WithdrawlRequest"
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/WithdrawlResponse"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+  /banking/transfer:
+    put:
+      operationId: transferFunds
+      summary: transfer of funds
+      description: funds will be transfered from the provided account to beneficiary account
+      parameters:
+        - in: body
+          name: transferRequest
+          required: true
+          schema:
+            $ref: "#/definitions/TransferRequest"
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/TransferResponse"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+  /banking/transactions:
+    get:
+      operationId: getTransactions
+      summary: list of transactions
+      description: returns the list of transactions for the given account
+      parameters:
+        - in: query
+          name: accountNumber
+          required: true
+          type: integer
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Transaction"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+  /banking/accounttype:
+    put:
+      operationId: updateAccountType
+      summary: change of account type
+      description: account type will be modified for the given account
+      parameters:
+        - in: body
+          name: accountTypeRequest
+          required: true
+          schema:
+            $ref: "#/definitions/AccountTypeRequest"
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/AccountTypeResponse"
+        400:
+          $ref: "#/responses/400ErrorResponse"
+        401:
+          $ref: "#/responses/401ErrorResponse"
+        500:
+          $ref: "#/responses/500ErrorResponse"
+definitions:
+  Transaction:
+    properties:
+      transactionId:
+        type: integer
+      description:
+        type: string
+      transactionStatus:
+        type: string
+      transactionDate:
+        type: string
+      transactionType:
+        type: string
+      amount:
+        type: number
+  CreateAccountRequest:
+    properties:
+      fistName:
+        type: string
+      lastName:
+        type: string
+      dateOfBirth:
+        type: string
+      accountType:
+        type: string
+  CreateAccountResponse:
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+      accountNumber:
+        type: integer
+  DepositRequest:
+    properties:
+      accountNumber:
+        type: integer
+      amount:
+        type: number
+      depositorName:
+        type: string
+  DepositResponse:
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+      transactionId:
+        type: integer
+  WithdrawlRequest:
+    properties:
+      accountNumber:
+        type: integer
+      amount:
+        type: number
+      borrowerName:
+        type: string
+  WithdrawlResponse:
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+      transactionId:
+        type: integer
+  TransferRequest:
+    properties:
+      accountNumber:
+        type: integer
+      amount:
+        type: number
+      beneficiaryAccountNumber:
+        type: integer
+  TransferResponse:
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+      transactionId:
+        type: integer
+  AccountTypeRequest:
+    properties:
+      accountNumber:
+        type: integer
+      accountType:
+        type: number
+  AccountTypeResponse:
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+  Error:
+    properties:
+      statusCode:
+        type: integer
+      statusMessage:
+        type: string
+responses:
+  400ErrorResponse:
+    description: bad request
+    schema:
+      $ref: "#/definitions/Error"
+  401ErrorResponse:
+    description: unauthorised request
+    schema:
+      $ref: "#/definitions/Error"
+  500ErrorResponse:
+    description: unexpected error
+    schema:
+      $ref: "#/definitions/Error"
